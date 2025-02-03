@@ -46,7 +46,7 @@ public class MainFrame extends java.awt.Frame implements Console.Directory {
 	
     public static void initawt() {
 	try {
-	    System.setProperty("apple.awt.application.name", "Haven & Hearth");
+	    System.setProperty("apple.awt.application.name", "modify & Hearth");
 	    javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 	} catch(Exception e) {}
     }
@@ -451,29 +451,32 @@ public class MainFrame extends java.awt.Frame implements Console.Directory {
 	status("exit");
 	System.exit(0);
     }
-    
-    public static void main(final String[] args) {
-	/* Set up the error handler as early as humanly possible. */
-	ThreadGroup g = new ThreadGroup("Haven main group");
-	String ed = Utils.getprop("haven.errorurl", "");
-	if(ed.equals("stderr")) {
-	    g = new haven.error.SimpleHandler("Haven main group", true);
-	} else if(!ed.equals("")) {
-	    try {
-		final haven.error.ErrorHandler hg = new haven.error.ErrorHandler(new java.net.URI(ed).toURL());
-		hg.sethandler(new haven.error.ErrorGui(null) {
-			public void errorsent() {
-			    hg.interrupt();
+
+	public static void main(final String[] args) {
+		String[] a = argCheck(args);
+		/* Set up the error handler as early as humanly possible. */
+		ThreadGroup g = new ThreadGroup("Haven main group");
+		String ed;
+		if(!(ed = Utils.getprop("haven.errorurl", "")).equals("")) {
+			try {
+				final haven.error.ErrorHandler hg = new haven.error.ErrorHandler(new java.net.URL(ed));
+				hg.sethandler(new haven.error.ErrorGui(null) {
+					public void errorsent() {
+						hg.interrupt();
+					}
+				});
+				g = hg;
+				new DeadlockWatchdog(hg).start();
+			} catch(java.net.MalformedURLException e) {
 			}
-		    });
-		g = hg;
-		new DeadlockWatchdog(hg).start();
-	    } catch(java.net.MalformedURLException | java.net.URISyntaxException e) {
-	    }
+		}
+		Thread main = new HackThread(g, new Runnable() {
+			public void run() {
+				main2(a);
+			}
+		}, "Haven main thread");
+		main.start();
 	}
-	Thread main = new HackThread(g, () -> main2(args), "Haven main thread");
-	main.start();
-    }
 	
     private static void dumplist(Collection<Resource> list, Path fn) {
 	try {
@@ -486,4 +489,33 @@ public class MainFrame extends java.awt.Frame implements Console.Directory {
 	    throw(new RuntimeException(e));
 	}
     }
+	//LJ
+	public static String[] argCheck(String[] args)
+	{
+		System.out.println("Running client!");
+		ArrayList<String> list = new ArrayList<>();
+		if(!contains("-U", args))
+		{
+			list.add("-U");
+			list.add("https://game.havenandhearth.com/res/");
+			list.add("game.havenandhearth.com");
+		}
+		else
+		{
+			Arrays.stream(args).forEach(x -> list.add(x));
+		}
+		//Arrays.stream(args).forEach(x -> list.add(x));
+		String[] a = list.toArray(new String[0]);
+		return a;
+	}
+
+	private static boolean contains(String s, String[] a)
+	{
+		for(int i = 0; i < a.length; i++)
+		{
+			if(a[i].equals(s))
+				return true;
+		}
+		return false;
+	}
 }
