@@ -45,7 +45,20 @@
 
   <!-- JOGL -->
   <target name="extlib/jogl" depends="extlib-env">
-    <extlib name="jogl" path="lib/ext/jogl" url="https://raw.githubusercontent.com/gephi/gephi/mvn-thirdparty-repo/org/jogamp/jogl/jogl-all/2.4.0-rc4/jogl-all-2.4.0-rc4.jar" />
+    <mkdir dir="lib/ext/jogl" />
+
+    <!-- Download the 7z file -->
+    <get src="https://download.jzy3d.org/jogl/jogl-2.4-tests-macosx-universal.7z"
+         dest="lib/ext/jogl/jogl.7z"
+         usetimestamp="false" />
+
+    <!-- Extract the archive (requires external 7z tool) -->
+    <exec executable="7z" failonerror="true">
+      <arg line="x lib/ext/jogl/jogl.7z -o lib/ext/jogl/" />
+    </exec>
+
+    <!-- Remove the original archive to save space -->
+    <delete file="lib/ext/jogl/jogl.7z" />
   </target>
 
   <!-- LWJGL Base -->
