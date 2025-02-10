@@ -45,7 +45,7 @@
   </target>
 
   <!-- JOGL -->
-  <target name="extlib/jogl" depends="extlib-env">
+  <target name="extlib/jogl" depends="extlib-env" unless="extlib/has-jogl">
     <mkdir dir="lib/ext/jogl" />
 
     <!-- Download the 7z file -->
@@ -60,6 +60,9 @@
 
     <!-- Remove the original archive to save space -->
     <delete file="lib/ext/jogl/jogl.7z" />
+
+    <!-- Create a property that signifies successful download -->
+    <property name="extlib/has-jogl" value="true" />
   </target>
 
   <!-- LWJGL Base -->
