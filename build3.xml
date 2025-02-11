@@ -64,9 +64,6 @@
 
     <target name="extlib/jogl" depends="extlib-env" unless="extlib/has-jogl">
         <extlib name="jogl" path="lib/ext/jogl" url="https://repo.maven.apache.org/maven2/org/jogamp/jogl/2.4.0-rc4/jogl-all-2.4.0-rc4.jar" />
-        <!-- Create a property that signifies successful download -->
-        <property name="extlib/has-jogl" value="true" />
-        <echo message="jogl downloaded" file="lib/ext/jogl/has-jogl" />
     </target>
 
     <target name="extlib/lwjgl-base" depends="extlib-env" unless="extlib/has-lwjgl-base">
