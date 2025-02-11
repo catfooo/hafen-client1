@@ -5,17 +5,6 @@
   <property name="ext-lib-base" value="http://www.havenandhearth.com/java" />
 
   <target name="check-env">
-    <!-- Check for Homebrew -->
-    <exec executable="sh" failonerror="false" outputproperty="brew-check">
-      <arg line="-c 'command -v brew'" />
-    </exec>
-    <condition property="has-brew">
-      <length string="${brew-check}" length="0" when="greater" />
-    </condition>
-    <exec executable="/bin/bash" condition="!has-brew" failonerror="true">
-      <arg line='-c "echo Installing Homebrew...; /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""' />
-    </exec>
-
     <!-- Check for 7z -->
     <exec executable="sh" failonerror="false" outputproperty="sevenzip-check">
       <arg line="-c 'command -v 7z'" />
@@ -23,9 +12,22 @@
     <condition property="has-7z">
       <length string="${sevenzip-check}" length="0" when="greater" />
     </condition>
-    <exec executable="brew" condition="!has-7z" failonerror="true">
-      <arg line="install p7zip" />
+
+    <!-- If 7z is not found, download it -->
+    <exec executable="curl" condition="!has-7z" failonerror="true">
+      <arg line="-L -o p7zip.pkg https://sourceforge.net/projects/p7zip/files/p7zip/17.03/p7zip_17.03_macOS_x86_64.pkg/download" />
     </exec>
+
+    <!-- Install p7zip if it was downloaded -->
+    <exec executable="sudo" condition="!has-7z" failonerror="true">
+      <arg line="installer -pkg p7zip.pkg -target /" />
+    </exec>
+
+    <!-- Cleanup the downloaded package -->
+    <delete file="p7zip.pkg" condition="!has-7z" />
+
+    <!-- Echo a message if 7z is still not found -->
+    <fail unless="has-7z" message="7z (p7zip) installation failed. Please install it manually." />
   </target>
 
 
