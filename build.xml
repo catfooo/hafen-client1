@@ -55,7 +55,7 @@
 
     <!-- Extract the archive (requires external 7z tool) -->
     <exec executable="7z" failonerror="true">
-      <arg line="x lib/ext/jogl/jogl.7z -o lib/ext/jogl/" />
+      <arg line="x lib/ext/jogl/jogl.7z -olib/ext/jogl/" />
     </exec>
 
     <!-- Remove the original archive to save space -->
