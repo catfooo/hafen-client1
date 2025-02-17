@@ -61,6 +61,7 @@
         <isset property="has-7z" />
       </not>
     </condition>
+    <echo message="download-7z: ${download-7z}"/>
 
 <!--    <if>-->
 <!--      <isset property="download-7z" />-->
@@ -142,7 +143,7 @@
   </target>
 
   <!-- JOGL -->
-  <target name="extlib/jogl" depends="check-env, extlib-env" unless="extlib/has-jogl">
+  <target name="extlib/jogl" depends="install-env, check-env, extlib-env" unless="extlib/has-jogl">
     <mkdir dir="lib/ext/jogl" />
 
     <!-- Download the 7z file -->
