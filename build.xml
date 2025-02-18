@@ -4,6 +4,9 @@
   <property file="build.properties" />
   <property name="ext-lib-base" value="http://www.havenandhearth.com/java" />
 
+  <!-- Property for 7z path -->
+  <property name="sevenzip-path" value="${basedir}/lib/ext/7z/7zz" />
+
   <target name="check-env">
     <!-- Check for 7z -->
     <exec executable="sh" failonerror="false" outputproperty="sevenzip-check">
@@ -111,9 +114,10 @@
          dest="lib/ext/jogl/jogl.7z"
          usetimestamp="false" />
 
-    <!-- Extract the archive (requires external 7z tool) -->
-    <exec executable="7z" failonerror="true">
-      <arg line="x lib/ext/jogl/jogl.7z -olib/ext/jogl/" />
+    <!-- Set the 7z PATH -->
+    <exec executable="${basedir}/lib/ext/7z/7zz" failonerror="true">
+      <env key="PATH" value="${sevenzip-path}" />
+      <arg line="x ${basedir}/lib/ext/jogl/jogl.7z -o${basedir}/lib/ext/jogl/" />
     </exec>
 
     <!-- Remove the original archive to save space -->
