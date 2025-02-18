@@ -19,7 +19,6 @@
         <length string="${sevenzip-check}" length="0" />
       </not>
     </condition>
-<!--    <echo message="7z tool (p7zip) is already installed." if="has-7z" />-->
 
     <!-- Set a message property based on has-7z -->
     <condition property="message-7z" value="not installed. Downloading...">
@@ -32,28 +31,7 @@
     </condition>
 
     <!-- Echo message about 7z installation status -->
-    <echo message="7z tool (p7zip) is ${message-7z}" />
-    
-
-<!--    &lt;!&ndash; Fail if 7z is found &ndash;&gt;-->
-<!--    <fail unless="!has-7z" message="7z tool (p7zip) is already installed. Failing the build." />-->
-
-
-
-
-<!--    &lt;!&ndash; If 7z is not found, download it &ndash;&gt;-->
-<!--    <echo message="7z tool (p7zip) is not installed. Downloading..."/>-->
-<!--    <exec executable="curl" failonerror="true">-->
-<!--      <arg line="-L -o p7zip.pkg https://sourceforge.net/projects/p7zip/files/p7zip/17.03/p7zip_17.03_macOS_x86_64.pkg/download" />-->
-<!--    </exec>-->
-
-<!--    &lt;!&ndash; Install p7zip if it was downloaded &ndash;&gt;-->
-<!--    <exec executable="sudo" failonerror="true">-->
-<!--      <arg line="installer -pkg p7zip.pkg -target /" />-->
-<!--    </exec>-->
-
-<!--    &lt;!&ndash; Cleanup the downloaded package &ndash;&gt;-->
-<!--    <delete file="p7zip.pkg" />-->
+    <echo message="7z tool is ${message-7z}" />
 
     <!-- If 7z is not found, download it -->
     <condition property="download-7z" value="true">
@@ -62,43 +40,25 @@
       </not>
     </condition>
     <echo message="download-7z: ${download-7z}"/>
-
-<!--    <if>-->
-<!--      <isset property="download-7z" />-->
-<!--      <then>-->
-<!--        <echo message="Downloading 7z tool (p7zip)..." />-->
-<!--        <exec executable="curl" failonerror="true">-->
-<!--          <arg line="-L -o p7zip.pkg https://sourceforge.net/projects/p7zip/files/p7zip/17.03/p7zip_17.03_macOS_x86_64.pkg/download" />-->
-<!--        </exec>-->
-
-<!--        &lt;!&ndash; Install p7zip if it was downloaded &ndash;&gt;-->
-<!--        <exec executable="sudo" failonerror="true">-->
-<!--          <arg line="installer -pkg p7zip.pkg -target /" />-->
-<!--        </exec>-->
-
-<!--        &lt;!&ndash; Cleanup the downloaded package &ndash;&gt;-->
-<!--        <delete file="p7zip.pkg" />-->
-<!--      </then>-->
-<!--    </if>-->
-
-<!--    &lt;!&ndash; Echo a message if 7z is still not found &ndash;&gt;-->
-<!--    <fail unless="has-7z" message="7z (p7zip) installation failed. Please install it manually." />-->
   </target>
 
 <!--  instead of not supported if, use target for 7z tool?-->
   <target name="install-env" depends="check-env" if="download-7z">
-    <echo message="Downloading 7z tool (p7zip)..." />
+    <echo message="Downloading 7z tool..." />
     <exec executable="curl" failonerror="true">
-      <arg line="-L -o p7zip.pkg https://sourceforge.net/projects/p7zip/files/p7zip/17.03/p7zip_17.03_macOS_x86_64.pkg/download" />
+      <arg line="-L -o 7z2409-mac.tar.xz https://7-zip.org/a/7z2409-mac.tar.xz" />
     </exec>
 
-    <!-- Install p7zip if it was downloaded -->
-    <exec executable="sudo" failonerror="true">
-      <arg line="installer -pkg p7zip.pkg -target /" />
+    <!-- Ensure the lib/ext/7z directory exists -->
+    <mkdir dir="${basedir}/lib/ext/7z" />
+
+    <!-- Extract the tar.xz file -->
+    <exec executable="tar" failonerror="true">
+      <arg line="-xf 7z2409-mac.tar.xz -C ${basedir}/lib/ext/7z" />
     </exec>
 
-    <!-- Cleanup the downloaded package -->
-    <delete file="p7zip.pkg" />
+    <!-- Cleanup the downloaded archive -->
+    <delete file="7z2409-mac.tar.xz" />
   </target>
 
 
