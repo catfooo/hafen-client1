@@ -95,8 +95,19 @@
     <attribute name="path" />
     <attribute name="url" />
     <sequential>
+      <local name="@{name}-files" />
       <mkdir dir="@{path}" />
-      <get src="@{url}" dest="@{path}" usetimestamp="true" />
+      <loadresource property="@{name}-files">
+        <url url="@{url}/lib-files" />
+        <filterchain>
+          <prefixlines prefix="@{url}/" />
+        </filterchain>
+      </loadresource>
+      <get dest="@{path}/" usetimestamp="true">
+        <resourcelist>
+          <propertyresource name="@{name}-files" />
+        </resourcelist>
+      </get>
       <touch file="@{path}/has-@{name}" />
     </sequential>
   </macrodef>
@@ -115,9 +126,9 @@
          usetimestamp="false" />
 
     <!-- Set the 7z PATH -->
-    <exec executable="${basedir}/lib/ext/7z/7zz" failonerror="true">
+    <exec executable="${basedir}/lib/ext/7z/7zz" failonerror="false">
       <env key="PATH" value="${sevenzip-path}" />
-      <arg line="x ${basedir}/lib/ext/jogl/jogl.7z -o${basedir}/lib/ext/jogl/" />
+      <arg line="x -y ${basedir}/lib/ext/jogl/jogl.7z -o${basedir}/lib/ext/jogl/" />
     </exec>
 
     <!-- Remove the original archive to save space -->
