@@ -121,7 +121,7 @@
     <mkdir dir="lib/ext/jogl" />
 
     <!-- Download the 7z file -->
-    <get src="https://download.jzy3d.org/jogl/jogl-2.4-tests-macosx-universal.7z"
+    <get src="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z"
          dest="lib/ext/jogl/jogl.7z"
          usetimestamp="false" />
 
@@ -130,6 +130,11 @@
       <env key="PATH" value="${sevenzip-path}" />
       <arg line="x -y ${basedir}/lib/ext/jogl/jogl.7z -o${basedir}/lib/ext/jogl/" />
     </exec>
+
+    <!-- Move contents out of jogamp-all-platforms to jogl directly -->
+    <move todir="${basedir}/lib/ext/jogl">
+      <fileset dir="${basedir}/lib/ext/jogl/jogamp-all-platforms/jar"/>
+    </move>
 
     <!-- Remove the original archive to save space -->
     <delete file="lib/ext/jogl/jogl.7z" />
