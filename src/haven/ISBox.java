@@ -39,7 +39,7 @@ public class ISBox extends Widget implements DTarget {
 	    }
 	};
     public static final Coord defsz = UI.scale(145, 42);
-    public static final Text.Foundry lf = new Text.Foundry(Text.fraktur, 22, Color.WHITE).aa(true);
+    public static final Text.Foundry lf = new Text.Foundry(Text.dfont, 22, Color.WHITE).aa(true);
     private final Indir<Resource> res;
     private Text label;
 

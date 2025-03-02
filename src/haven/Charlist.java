@@ -31,7 +31,7 @@ import java.util.*;
 
 public class Charlist extends Widget {
     public static final Coord bsz = UI.scale(289, 96);
-    public static final Text.Furnace tf = new PUtils.BlurFurn(new PUtils.TexFurn(new Text.Foundry(Text.fraktur, 20).aa(true), Window.ctex), UI.scale(2), UI.scale(2), Color.BLACK);
+    public static final Text.Furnace tf = new PUtils.BlurFurn(new PUtils.TexFurn(new Text.Foundry(Text.dfont, 20).aa(true), Window.ctex), UI.scale(2), UI.scale(2), Color.BLACK);
     public static final int margin = UI.scale(6);
     public static final int btnw = UI.scale(100);
     public final int height;

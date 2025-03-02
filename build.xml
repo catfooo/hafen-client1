@@ -121,9 +121,18 @@
     <mkdir dir="lib/ext/jogl" />
 
     <!-- Download the 7z file -->
-    <get src="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z"
-         dest="lib/ext/jogl/jogl.7z"
-         usetimestamp="false" />
+<!--    <get src="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z"-->
+<!--         dest="lib/ext/jogl/jogl.7z"-->
+<!--         usetimestamp="false" />-->
+<!--    for progress bar since this takes some time, but seems not displaying real time...-->
+    <exec executable="curl">
+      <arg value="-L" />
+      <arg value="--progress-bar" />
+      <arg value="-o" />
+      <arg value="lib/ext/jogl/jogl.7z" />
+      <arg value="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z" />
+    </exec>
+
 
     <!-- Set the 7z PATH -->
     <exec executable="${basedir}/lib/ext/7z/7zz" failonerror="false">

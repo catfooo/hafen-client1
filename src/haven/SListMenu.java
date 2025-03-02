@@ -32,7 +32,7 @@ import java.awt.image.BufferedImage;
 
 public abstract class SListMenu<I, W extends Widget> extends Widget {
     public static final Text.Foundry bigf = CharWnd.attrf;
-    public static final Text.Foundry smallf = new Text.Foundry(Text.fraktur, 14).aa(true);
+    public static final Text.Foundry smallf = new Text.Foundry(Text.dfont, 14).aa(true);
     public static final Tex bg = Window.bg;
     public static final IBox obox = Window.wbox;
     public final InnerList box;
