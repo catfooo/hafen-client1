@@ -127,7 +127,8 @@
 <!--    for progress bar since this takes some time, but seems not displaying real time...-->
     <exec executable="curl">
       <arg value="-L" />
-      <arg value="--progress-bar" />
+<!--      <arg value="&#45;&#45;progress-bar" />-->
+      <arg value="--verbose" />
       <arg value="-o" />
       <arg value="lib/ext/jogl/jogl.7z" />
       <arg value="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z" />
