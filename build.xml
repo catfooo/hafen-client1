@@ -3,14 +3,12 @@
 <project name="hafen" default="deftgt">
   <property file="build.properties" />
   <property name="ext-lib-base" value="http://www.havenandhearth.com/java" />
-
-  <!-- Property for 7z path -->
   <property name="sevenzip-path" value="${basedir}/lib/ext/7z/7zz" />
 
   <target name="check-env">
     <!-- Check for 7z -->
     <exec executable="sh" failonerror="false" outputproperty="sevenzip-check">
-      <arg line="-c 'command -v 7z'" />
+      <arg line="-c 'command -v ${sevenzip-path}'" />
     </exec>
 
     <!-- Debugging output -->
