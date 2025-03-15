@@ -147,8 +147,11 @@
     <!-- Remove the original archive to save space -->
     <delete file="lib/ext/jogl/jogl.7z" />
 
-    <!-- Create a property that signifies successful download -->
-    <property name="extlib/has-jogl" value="true" />
+<!--    &lt;!&ndash; Create a property that signifies successful download &ndash;&gt;-->
+<!--    <property name="extlib/has-jogl" value="true" />-->
+    <echo file="build.properties" append="true">
+      extlib/has-jogl=true
+    </echo>
   </target>
 
   <!-- LWJGL Base -->
