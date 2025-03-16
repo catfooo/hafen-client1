@@ -270,5 +270,6 @@
     <delete dir="build" />
     <delete dir="lib/ext" />
     <delete dir="bin" />
+    <delete file="build.properties" />
   </target>
 </project>
