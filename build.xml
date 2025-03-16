@@ -183,6 +183,7 @@
         <pathelement path="lib/jglob.jar" />
       </classpath>
       <compilerarg value="-Xlint:unchecked" />
+      <compilerarg value="-Xlint:deprecation" />
       <compilerarg value="-Xlint:-options" />
     </javac>
     <copy todir="build/classes">
