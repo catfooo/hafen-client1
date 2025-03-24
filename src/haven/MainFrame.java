@@ -65,7 +65,6 @@ public class MainFrame extends java.awt.Frame implements Console.Directory {
 	    javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 		// for retina, adjust UI scale property to display correctly
 		System.setProperty("sun.java2d.uiScale", "1");
-
 	} catch(Exception e) {
 	    new Warning(e, "AWT initialization failed").issue();
 	}
