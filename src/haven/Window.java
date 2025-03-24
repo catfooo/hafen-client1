@@ -58,7 +58,7 @@ public class Window extends Widget {
     public static final Coord dlmrgn = UI.scale(23, 14);
     public static final Coord dsmrgn = UI.scale(9, 9);
     public static final BufferedImage ctex = Resource.loadsimg("gfx/hud/fonttex");
-    public static final Text.Furnace cf = new Text.Imager(new PUtils.TexFurn(new Text.Foundry(Text.dfont, 15).aa(true), ctex)) {
+    public static final Text.Furnace cf = new Text.Imager(new PUtils.TexFurn(new Text.Foundry(Text.fraktur, 15).aa(true), ctex)) {
 	    protected BufferedImage proc(Text text) {
 		// return(rasterimg(blurmask2(text.img.getRaster(), 1, 1, Color.BLACK)));
 		return(rasterimg(blurmask2(text.img.getRaster(), UI.rscale(0.75), UI.rscale(1.0), Color.BLACK)));

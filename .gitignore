@@ -2,9 +2,11 @@
 /bin
 /local-config.properties
 /local-boot.properties
+/build.properties
 *~
 .idea
 *.iml
-*.log
 .DS_Store
-build.properties
+error.log
+output.log
+

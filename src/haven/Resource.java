@@ -1825,11 +1825,7 @@ public class Resource implements Serializable {
     }
     public <L extends Layer> L flayer(Class<L> cl) {
 	L l = layer(cl);
-//	if(l == null) throw(new NoSuchLayerException("no " + cl + " in " + name));
-		if (l == null) {
-			System.out.println("Warning: Missing layer " + cl.getSimpleName() + " in " + name + ", using fallback.");
-			return null; // Return null instead of throwing an exception
-		}
+	if(l == null) throw(new NoSuchLayerException("no " + cl + " in " + name));
 	return(l);
     }
 
@@ -1947,19 +1943,9 @@ public class Resource implements Serializable {
 	return(loadrimg(name).scaled());
     }
 
-//    public static Tex loadtex(String name) {
-//	return(loadrimg(name).tex());
-//    }
-public static Tex loadtex(String name) {
-	Resource.Image img = loadrimg(name);
-	if (img != null) {
-		return img.tex();
-	} else {
-		System.out.println("Warning: Missing texture for " + name + ", using fallback.");
-		return new TexI(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)); // 1x1 transparent fallback
-	}
-}
-
+    public static Tex loadtex(String name) {
+	return(loadrimg(name).tex());
+    }
 
     public String toString() {
 	return(name + "(v" + ver + ")");

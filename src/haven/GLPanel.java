@@ -220,103 +220,42 @@ public interface GLPanel extends UIPanel, UI.Context {
 	private String cursmode = defaultcurs();
 	private Resource lastcursor = null;
 	private Coord curshotspot = Coord.z;
-//	private void drawcursor(UI ui, GOut g) {
-//	    Resource curs;
-//	    synchronized(ui) {
-//		curs = ui.getcurs(ui.mc);
-//	    }
-//	    if(cursmode == "awt") {
-//		if(curs != lastcursor) {
-//		    try {
-//			if(curs == null) {
-//			    curshotspot = Coord.z;
-//			    p.setCursor(null);
-//			} else {
-//			    curshotspot = curs.flayer(Resource.negc).cc;
-//			    p.setCursor(UIPanel.makeawtcurs(curs.flayer(Resource.imgc).img, curshotspot));
-//			}
-//		    } catch(Exception e) {
-//			cursmode = "tex";
-//		    }
-//		}
-//	    } else if(cursmode == "tex") {
-//		if(curs == null) {
-//		    curshotspot = Coord.z;
-//		    if(lastcursor != null)
-//			p.setCursor(null);
-//		} else {
-//		    if(lastcursor == null)
-//			p.setCursor(emptycurs);
-//		    curshotspot = UI.scale(curs.flayer(Resource.negc).cc);
-//		    Coord dc = ui.mc.sub(curshotspot);
-//		    g.image(curs.flayer(Resource.imgc), dc);
-//		}
-//	    }
-//	    lastcursor = curs;
-//	}
-private void drawcursor(UI ui, GOut g) {
-	Resource curs;
-	synchronized (ui) {
+	private void drawcursor(UI ui, GOut g) {
+	    Resource curs;
+	    synchronized(ui) {
 		curs = ui.getcurs(ui.mc);
-	}
-
-	// 🚨 Ignore problematic cursor before processing
-	if (curs != null && curs.name.equals("gfx/hud/curs/arw")) {
-		return; // ✅ Skip processing entirely
-	}
-
-	if (cursmode == "awt") {
-		if (curs != lastcursor) {
-			try {
-				if (curs == null) {
-					curshotspot = Coord.z;
-					p.setCursor(null);
-				} else {
-					Resource.Neg neg = curs.flayer(Resource.negc);
-					Resource.Image img = curs.flayer(Resource.imgc);
-
-					if (neg != null && img != null) {
-						curshotspot = neg.cc;
-						p.setCursor(UIPanel.makeawtcurs(img.img, curshotspot));
-					} else {
-						if (lastcursor == curs) return;
-						System.out.println("Warning: Missing cursor layers for " + curs.name);
-						curshotspot = Coord.z;
-						p.setCursor(null);
-					}
-				}
-			} catch (Exception e) {
-				cursmode = "tex";
-			}
-		}
-	} else if (cursmode == "tex") {
-		if (curs == null) {
-			curshotspot = Coord.z;
-			if (lastcursor != null)
-				p.setCursor(null);
-		} else {
-			if (lastcursor == null)
-				p.setCursor(emptycurs);
-
-			Resource.Neg neg = curs.flayer(Resource.negc);
-			Resource.Image img = curs.flayer(Resource.imgc);
-
-			if (neg != null && img != null) {
-				curshotspot = UI.scale(neg.cc);
-				Coord dc = ui.mc.sub(curshotspot);
-				g.image(img, dc);
+	    }
+	    if(cursmode == "awt") {
+		if(curs != lastcursor) {
+		    try {
+			if(curs == null) {
+			    curshotspot = Coord.z;
+			    p.setCursor(null);
 			} else {
-				if (lastcursor == curs) return;
-				System.out.println("Warning: Missing layer(s) in " + curs.name);
-				curshotspot = Coord.z;
+			    curshotspot = curs.flayer(Resource.negc).cc;
+			    p.setCursor(UIPanel.makeawtcurs(curs.flayer(Resource.imgc).img, curshotspot));
 			}
+		    } catch(Exception e) {
+			cursmode = "tex";
+		    }
 		}
+	    } else if(cursmode == "tex") {
+		if(curs == null) {
+		    curshotspot = Coord.z;
+		    if(lastcursor != null)
+			p.setCursor(null);
+		} else {
+		    if(lastcursor == null)
+			p.setCursor(emptycurs);
+		    curshotspot = UI.scale(curs.flayer(Resource.negc).cc);
+		    Coord dc = ui.mc.sub(curshotspot);
+		    g.image(curs.flayer(Resource.imgc), dc);
+		}
+	    }
+	    lastcursor = curs;
 	}
-	lastcursor = curs;
-}
 
-
-		private long prevfree = 0, framealloc = 0;
+	private long prevfree = 0, framealloc = 0;
 	@SuppressWarnings("deprecation")
 	private void drawstats(UI ui, GOut g, GLRender buf) {
 	    int y = g.sz().y - UI.scale(190), dy = FastText.h;

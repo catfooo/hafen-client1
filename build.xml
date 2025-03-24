@@ -3,65 +3,6 @@
 <project name="hafen" default="deftgt">
   <property file="build.properties" />
   <property name="ext-lib-base" value="http://www.havenandhearth.com/java" />
-  <property name="sevenzip-path" value="${basedir}/lib/ext/7z/7zz" />
-
-  <target name="check-env">
-    <!-- Check for 7z -->
-    <exec executable="sh" failonerror="false" outputproperty="sevenzip-check">
-      <arg line="-c 'command -v ${sevenzip-path}'" />
-    </exec>
-
-    <!-- Debugging output -->
-    <echo message="sevenzip-check: ${sevenzip-check}" />
-
-    <!-- Set property if 7z is found -->
-    <condition property="has-7z">
-      <not>
-        <length string="${sevenzip-check}" length="0" />
-      </not>
-    </condition>
-
-    <!-- Set a message property based on has-7z -->
-    <condition property="message-7z" value="not installed. Downloading...">
-      <not>
-        <isset property="has-7z" />
-      </not>
-    </condition>
-    <condition property="message-7z" value="already installed.">
-      <isset property="has-7z" />
-    </condition>
-
-    <!-- Echo message about 7z installation status -->
-    <echo message="7z tool is ${message-7z}" />
-
-    <!-- If 7z is not found, download it -->
-    <condition property="download-7z" value="true">
-      <not>
-        <isset property="has-7z" />
-      </not>
-    </condition>
-    <echo message="download-7z: ${download-7z}"/>
-  </target>
-
-<!--  instead of not supported if, use target for 7z tool?-->
-  <target name="install-env" depends="check-env" if="download-7z">
-    <echo message="Downloading 7z tool..." />
-    <exec executable="curl" failonerror="true">
-      <arg line="-L -o 7z2409-mac.tar.xz https://7-zip.org/a/7z2409-mac.tar.xz" />
-    </exec>
-
-    <!-- Ensure the lib/ext/7z directory exists -->
-    <mkdir dir="${basedir}/lib/ext/7z" />
-
-    <!-- Extract the tar.xz file -->
-    <exec executable="tar" failonerror="true">
-      <arg line="-xf 7z2409-mac.tar.xz -C ${basedir}/lib/ext/7z" />
-    </exec>
-
-    <!-- Cleanup the downloaded archive -->
-    <delete file="7z2409-mac.tar.xz" />
-  </target>
-
 
   <target name="build-env">
     <mkdir dir="build" />
@@ -88,6 +29,7 @@
     </echo>
   </target>
 
+
   <macrodef name="extlib">
     <attribute name="name" />
     <attribute name="path" />
@@ -96,15 +38,15 @@
       <local name="@{name}-files" />
       <mkdir dir="@{path}" />
       <loadresource property="@{name}-files">
-        <url url="@{url}/lib-files" />
-        <filterchain>
-          <prefixlines prefix="@{url}/" />
-        </filterchain>
+	<url url="@{url}/lib-files" />
+	<filterchain>
+	  <prefixlines prefix="@{url}/" />
+	</filterchain>
       </loadresource>
       <get dest="@{path}/" usetimestamp="true">
-        <resourcelist>
-          <propertyresource name="@{name}-files" />
-        </resourcelist>
+	<resourcelist>
+	  <propertyresource name="@{name}-files" />
+	</resourcelist>
       </get>
       <touch file="@{path}/has-@{name}" />
     </sequential>
@@ -112,79 +54,46 @@
 
   <target name="extlib-env">
     <mkdir dir="lib/ext" />
+    <available property="extlib/has-jogl" file="lib/ext/jogl/has-jogl" />
+    <available property="extlib/has-lwjgl-base" file="lib/ext/lwjgl/has-lwjgl-base" />
+    <available property="extlib/has-lwjgl-gl" file="lib/ext/lwjgl/has-lwjgl-gl" />
+    <available property="extlib/has-steamworks" file="lib/ext/steamworks/has-steamworks" />
   </target>
 
-  <!-- JOGL -->
-  <target name="extlib/jogl" depends="install-env, check-env, extlib-env" unless="extlib/has-jogl">
-    <mkdir dir="lib/ext/jogl" />
-
-    <!-- Download the 7z file -->
-<!--    <get src="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z"-->
-<!--         dest="lib/ext/jogl/jogl.7z"-->
-<!--         usetimestamp="false" />-->
-<!--    for progress bar since this takes some time, but seems not displaying real time...-->
-    <exec executable="curl">
-      <arg value="-L" />
-      <arg value="--progress-bar" />
-<!--      <arg value="&#45;&#45;verbose" />--><!--      this was for 7z, but was actually working for jogl real time, and was tmi-->
-      <arg value="-o" />
-      <arg value="lib/ext/jogl/jogl.7z" />
-      <arg value="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z" />
-    </exec>
-
-
-    <!-- Set the 7z PATH -->
-    <exec executable="${basedir}/lib/ext/7z/7zz" failonerror="false">
-      <env key="PATH" value="${sevenzip-path}" />
-      <arg line="x -y ${basedir}/lib/ext/jogl/jogl.7z -o${basedir}/lib/ext/jogl/" />
-    </exec>
-
-    <!-- Move contents out of jogamp-all-platforms to jogl directly -->
-    <move todir="${basedir}/lib/ext/jogl">
-      <fileset dir="${basedir}/lib/ext/jogl/jogamp-all-platforms/jar"/>
-    </move>
-
-    <!-- Remove the original archive to save space -->
-    <delete file="lib/ext/jogl/jogl.7z" />
-
-<!--    &lt;!&ndash; Create a property that signifies successful download &ndash;&gt;-->
-<!--    <property name="extlib/has-jogl" value="true" />-->
-    <echo file="build.properties" append="true">
-      extlib/has-jogl=true
-    </echo>
+  <target name="extlib/jogl" depends="extlib-env" unless="extlib/has-jogl">
+    <extlib name="jogl" path="lib/ext/jogl" url="${ext-lib-base}/jogl/current" />
   </target>
 
-  <!-- LWJGL Base -->
-  <target name="extlib/lwjgl-base" depends="extlib-env">
+  <target name="extlib/lwjgl-base" depends="extlib-env" unless="extlib/has-lwjgl-base">
     <extlib name="lwjgl-base" path="lib/ext/lwjgl" url="${ext-lib-base}/lwjgl/current/lwjgl" />
   </target>
 
-  <!-- LWJGL GL -->
-  <target name="extlib/lwjgl-gl" depends="extlib-env, extlib/lwjgl-base">
+  <target name="extlib/lwjgl-gl" depends="extlib-env, extlib/lwjgl-base" unless="extlib/has-lwjgl-gl">
     <extlib name="lwjgl-gl" path="lib/ext/lwjgl" url="${ext-lib-base}/lwjgl/current/lwjgl-opengl" />
   </target>
 
-  <!-- Steamworks -->
-  <target name="extlib/steamworks" depends="extlib-env">
+  <target name="extlib/steamworks" depends="extlib-env" unless="extlib/has-steamworks">
     <extlib name="steamworks" path="lib/ext/steamworks" url="${ext-lib-base}/steamworks/current" />
   </target>
 
+
   <target name="hafen-client" depends="build-env, extlib/jogl, extlib/lwjgl-gl, extlib/steamworks">
     <javac srcdir="src" destdir="build/classes" debug="on"
-           source="1.8" target="1.8" includeantruntime="no"
-           bootclasspath="${boot-classpath}">
+	   source="1.8" target="1.8" includeantruntime="no"
+	   bootclasspath="${boot-classpath}">
       <classpath>
-        <pathelement path="lib/ext/jogl/jogl-all.jar" />
-        <pathelement path="lib/ext/jogl/gluegen-rt.jar" />
-        <pathelement path="lib/ext/lwjgl/lwjgl-fat.jar" />
-        <pathelement path="lib/ext/lwjgl/lwjgl-awt.jar" />
-        <pathelement path="lib/ext/lwjgl/lwjgl-opengl-fat.jar" />
-        <pathelement path="lib/ext/steamworks/steamworks4j.jar" />
-        <pathelement path="lib/jglob.jar" />
+	<pathelement path="lib/ext/jogl/jogl-all.jar" />
+	<pathelement path="lib/ext/jogl/gluegen-rt.jar" />
+	<pathelement path="lib/ext/lwjgl/lwjgl-fat.jar" />
+	<pathelement path="lib/ext/lwjgl/lwjgl-awt.jar" />
+	<pathelement path="lib/ext/lwjgl/lwjgl-opengl-fat.jar" />
+	<pathelement path="lib/ext/steamworks/steamworks4j.jar" />
+	<pathelement path="lib/jglob.jar" />
       </classpath>
       <compilerarg value="-Xlint:unchecked" />
       <compilerarg value="-Xlint:deprecation" />
       <compilerarg value="-Xlint:-options" />
+      <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
     <copy todir="build/classes">
       <fileset dir="src" excludes="**/*.java" />
@@ -209,8 +118,8 @@
       <fileset dir="build/classes" />
       <fileset dir="build/classes-lib" />
       <manifest>
-        <attribute name="Main-Class" value="haven.MainFrame" />
-        <attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lwjgl-fat.jar lwjgl-awt.jar lwjgl-opengl-fat.jar steamworks4j.jar builtin-res.jar hafen-res.jar" />
+	<attribute name="Main-Class" value="haven.MainFrame" />
+	<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lwjgl-fat.jar lwjgl-awt.jar lwjgl-opengl-fat.jar steamworks4j.jar builtin-res.jar hafen-res.jar" />
       </manifest>
     </jar>
     <chmod file="build/hafen.jar" perm="a+x" />
@@ -218,9 +127,9 @@
 
   <target name="res-jar" depends="build-env" unless="has-res-jar">
     <get src="${ext-lib-base}/builtin-res.jar" dest="lib/ext/builtin-res.jar"
-         usetimestamp="true" />
+	 usetimestamp="true" />
     <get src="${ext-lib-base}/hafen-res.jar" dest="lib/ext/hafen-res.jar"
-         usetimestamp="true" />
+	 usetimestamp="true" />
     <available property="lib-res-jar" file="lib/ext/hafen-res.jar" />
     <fail unless="lib-res-jar" message="hafen-res.jar not available" />
     <available property="lib-builtin-jar" file="lib/ext/builtin-res.jar" />
@@ -230,8 +139,8 @@
   <target name="jars" depends="build-env, jar, extlib/jogl, extlib/lwjgl-gl, extlib/steamworks">
     <copy todir="build" failonerror="false" quiet="true">
       <fileset dir="lib">
-        <include name="builtin-res.jar" />
-        <include name="hafen-res.jar" />
+	<include name="builtin-res.jar" />
+	<include name="hafen-res.jar" />
       </fileset>
     </copy>
     <copy todir="build">
@@ -246,11 +155,11 @@
     <mkdir dir="bin" />
     <copy todir="bin">
       <fileset dir="build">
-        <include name="hafen.jar" />
+	<include name="hafen.jar" />
       </fileset>
       <fileset dir="lib/ext">
-        <include name="hafen-res.jar" />
-        <include name="builtin-res.jar" />
+	<include name="hafen-res.jar" />
+	<include name="builtin-res.jar" />
       </fileset>
       <fileset dir="lib/ext/jogl"><include name="*.jar" /></fileset>
       <fileset dir="lib/ext/lwjgl"><include name="*.jar" /></fileset>
@@ -270,6 +179,5 @@
     <delete dir="build" />
     <delete dir="lib/ext" />
     <delete dir="bin" />
-    <delete file="build.properties" />
   </target>
 </project>
