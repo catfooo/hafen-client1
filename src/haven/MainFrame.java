@@ -61,7 +61,7 @@ public class MainFrame extends java.awt.Frame implements Console.Directory {
 
     public static void initawt() {
 	try {
-	    System.setProperty("apple.awt.application.name", "Haven & Hearth");
+	    System.setProperty("apple.awt.application.name", "modify & Hearth");
 	    javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 		// for retina, adjust UI scale property to display correctly
 		System.setProperty("sun.java2d.uiScale", "1");
