@@ -1825,11 +1825,17 @@ public class Resource implements Serializable {
     }
     public <L extends Layer> L flayer(Class<L> cl) {
 	L l = layer(cl);
-	if(l == null) throw(new NoSuchLayerException("no " + cl + " in " + name));
-	return(l);
-    }
+		//	if(l == null) throw(new NoSuchLayerException("no " + cl + " in " + name));
+		if (l == null) {
+			NoSuchLayerException e = new NoSuchLayerException("no " + cl + " in " + name);
+			e.printStackTrace();  // This will print the full stack trace to display ...15 more
+			throw e;
+		}
+		return(l);
+	}
 
-    public <L> Collection<L> layers(Class<L> cl, Predicate<? super L> sel) {
+
+	public <L> Collection<L> layers(Class<L> cl, Predicate<? super L> sel) {
 	used = true;
 	if(sel == null)
 	    sel = l -> true;
