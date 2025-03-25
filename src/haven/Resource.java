@@ -1827,6 +1827,10 @@ public class Resource implements Serializable {
 	L l = layer(cl);
 		//	if(l == null) throw(new NoSuchLayerException("no " + cl + " in " + name));
 		if (l == null) {
+			System.out.println("Available layers in " + name + ":");
+			for (Layer layer : layers) {
+				System.out.println(" - " + layer.getClass().getName());
+			}
 			NoSuchLayerException e = new NoSuchLayerException("no " + cl + " in " + name);
 			e.printStackTrace();  // This will print the full stack trace to display ...15 more
 			throw e;
