@@ -4,6 +4,65 @@
   <property file="build.properties" />
   <property name="ext-lib-base" value="http://www.havenandhearth.com/java" />
 
+  <property name="sevenzip-path" value="${basedir}/lib/ext/7z/7zz" />
+
+  <target name="check-env">
+    <!-- Check for 7z -->
+    <exec executable="sh" failonerror="false" outputproperty="sevenzip-check">
+      <arg line="-c 'command -v ${sevenzip-path}'" />
+    </exec>
+
+    <!-- Debugging output -->
+    <echo message="sevenzip-check: ${sevenzip-check}" />
+
+    <!-- Set property if 7z is found -->
+    <condition property="has-7z">
+      <not>
+        <length string="${sevenzip-check}" length="0" />
+      </not>
+    </condition>
+
+    <!-- Set a message property based on has-7z -->
+    <condition property="message-7z" value="not installed. Downloading...">
+      <not>
+        <isset property="has-7z" />
+      </not>
+    </condition>
+    <condition property="message-7z" value="already installed.">
+      <isset property="has-7z" />
+    </condition>
+
+    <!-- Echo message about 7z installation status -->
+    <echo message="7z tool is ${message-7z}" />
+
+    <!-- If 7z is not found, download it -->
+    <condition property="download-7z" value="true">
+      <not>
+        <isset property="has-7z" />
+      </not>
+    </condition>
+    <echo message="download-7z: ${download-7z}"/>
+  </target>
+
+  <!--  instead of not supported if, use target for 7z tool?-->
+  <target name="install-env" depends="check-env" if="download-7z">
+    <echo message="Downloading 7z tool..." />
+    <exec executable="curl" failonerror="true">
+      <arg line="-L -o 7z2409-mac.tar.xz https://7-zip.org/a/7z2409-mac.tar.xz" />
+    </exec>
+
+    <!-- Ensure the lib/ext/7z directory exists -->
+    <mkdir dir="${basedir}/lib/ext/7z" />
+
+    <!-- Extract the tar.xz file -->
+    <exec executable="tar" failonerror="true">
+      <arg line="-xf 7z2409-mac.tar.xz -C ${basedir}/lib/ext/7z" />
+    </exec>
+
+    <!-- Cleanup the downloaded archive -->
+    <delete file="7z2409-mac.tar.xz" />
+  </target>
+
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
@@ -60,8 +119,47 @@
     <available property="extlib/has-steamworks" file="lib/ext/steamworks/has-steamworks" />
   </target>
 
-  <target name="extlib/jogl" depends="extlib-env" unless="extlib/has-jogl">
-    <extlib name="jogl" path="lib/ext/jogl" url="${ext-lib-base}/jogl/current" />
+  <!-- JOGL -->
+  <target name="extlib/jogl" depends="install-env, check-env, extlib-env" unless="extlib/has-jogl">
+  <mkdir dir="lib/ext/jogl" />
+
+  <!-- Download the 7z file -->
+  <!--    <get src="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z"-->
+  <!--         dest="lib/ext/jogl/jogl.7z"-->
+  <!--         usetimestamp="false" />-->
+  <!--    for progress bar since this takes some time, but seems not displaying real time...-->
+  <exec executable="curl">
+    <arg value="-L" />
+    <arg value="--progress-bar" />
+    <!--      <arg value="&#45;&#45;verbose" />--><!--      this was for 7z, but was actually working for jogl real time, and was tmi-->
+    <arg value="-o" />
+    <arg value="lib/ext/jogl/jogl.7z" />
+    <arg value="https://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z" />
+  </exec>
+
+
+  <!-- Set the 7z PATH -->
+  <exec executable="${basedir}/lib/ext/7z/7zz" failonerror="false">
+    <env key="PATH" value="${sevenzip-path}" />
+    <arg line="x -y ${basedir}/lib/ext/jogl/jogl.7z -o${basedir}/lib/ext/jogl/" />
+  </exec>
+
+  <!-- Move contents out of jogamp-all-platforms to jogl directly -->
+  <move todir="${basedir}/lib/ext/jogl">
+    <fileset dir="${basedir}/lib/ext/jogl/jogamp-all-platforms/jar"/>
+  </move>
+
+  <!-- Remove the original archive to save space -->
+  <delete file="lib/ext/jogl/jogl.7z" />
+
+  <!--    &lt;!&ndash; Create a property that signifies successful download &ndash;&gt;-->
+  <!--    <property name="extlib/has-jogl" value="true" />-->
+  <echo file="build.properties" append="true">
+    extlib/has-jogl=true
+  </echo>
+
+<!--  <target name="extlib/jogl" depends="extlib-env" unless="extlib/has-jogl">-->
+<!--    <extlib name="jogl" path="lib/ext/jogl" url="${ext-lib-base}/jogl/current" />-->
   </target>
 
   <target name="extlib/lwjgl-base" depends="extlib-env" unless="extlib/has-lwjgl-base">
