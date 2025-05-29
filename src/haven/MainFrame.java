@@ -70,12 +70,19 @@ public class MainFrame extends java.awt.Frame implements Console.Directory {
 	}
     }
 
-    static {
-	initlocale();
-	initawt();
-    }
-	
-    DisplayMode findmode(int w, int h) {
+	static {
+		try {
+			System.out.println("Working dir: " + System.getProperty("user.dir"));
+			System.out.println("Classpath: " + System.getProperty("java.class.path"));
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		initlocale();
+		initawt();
+	}
+
+
+	DisplayMode findmode(int w, int h) {
 	GraphicsDevice dev = getGraphicsConfiguration().getDevice();
 	if(!dev.isFullScreenSupported())
 	    return(null);
